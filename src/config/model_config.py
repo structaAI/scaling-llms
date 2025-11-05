@@ -8,7 +8,7 @@ class ModelConfig:
   intermediate_size: int = 1024
   num_hidden_layers: int = 2
   num_attention_heads: int = 4
-  num_key_value_heads: Optional[int] = None
+  num_key_value_heads: int = 2
 
   # Model features
   hidden_act: str = "silu"
