@@ -5,10 +5,11 @@ from models.m0_minimal import create_minimal_model
 from models.m1_small import create_small_model
 from models.m2_medium import create_medium_model
 from models.m3_large import create_large_model
+from model.llama4_arch import LLaMaForCausalLM
 
 def create_model(custom_config: ModelConfig, model_size: str = "minimal", vocab_size: int = 32000):
   if custom_config is not None:
-    return LLaMA4ForCausalLM(custom_config)
+    return LLaMaForCausalLM(custom_config)
   
   model_creators = {
     "minimal": create_minimal_model,
@@ -24,7 +25,7 @@ def create_model(custom_config: ModelConfig, model_size: str = "minimal", vocab_
   return model_creators[model_size](vocab_size=vocab_size)
 
 __all__ = [
-  "LLaMA4ForCausalLM",
+  "LLaMaForCausalLM",
   "create_model",
   "create_minimal_model",
   "create_small_model",

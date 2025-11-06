@@ -78,26 +78,22 @@ class CodeLLaMa(nn.Module):
       hidden_states = layer_outputs[0]
         
       if output_attentions and all_attentions is not None:
-          # Handle case where attention weights might not be returned
         if len(layer_outputs) > 1 and layer_outputs[1] is not None:
             all_attentions = all_attentions + (layer_outputs[1],)
         else:
             all_attentions = all_attentions + (None,)
       
       if self.config.use_cache and next_decoder_cache is not None:
-        # Handle case where past_key_value might not be returned
         if len(layer_outputs) > 2 and layer_outputs[2] is not None:
             next_decoder_cache = next_decoder_cache + (layer_outputs[2],)
         else:
             next_decoder_cache = next_decoder_cache + (None,)
     
-    # Apply final normalization
     hidden_states = self.norm(hidden_states)
     
     if output_hidden_states and all_hidden_states is not None:
       all_hidden_states = all_hidden_states + (hidden_states,)
     
-    # Fixed: Return proper dictionary with all outputs
     return {
       "last_hidden_state": hidden_states,
       "hidden_states": all_hidden_states,
