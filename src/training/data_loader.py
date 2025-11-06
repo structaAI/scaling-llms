@@ -7,3 +7,6 @@ from transformers import PreTrainedTokenizer
 
 class TextDataset(Dataset):
   pass
+
+class CodeDataset(Dataset):
+  pass
