@@ -48,33 +48,26 @@ class GQA(nn.Module):
     q = self.rotary_emb(q, seq_len)
     k = self.rotary_emb(k, seq_len)
 
-    # Handle past key values - FIXED: Add proper check and handling
     if past_key_value is not None:
       k_prev, v_prev = past_key_value
       k = torch.cat([k_prev, k], dim=1)
       v = torch.cat([v_prev, v], dim=1)
-      # Update sequence length after concatenation
       seq_len = k.shape[1]
     
-    # Create present key value for caching - FIXED: Always return during inference
     present_key_value = (k, v) if (self.training or past_key_value is not None) else None
 
-    # Repeat k, v for grouped query attention
     if self.num_kv_heads != self.num_attention_heads:
       k = k.repeat_interleave(self.num_attention_heads // self.num_kv_heads, dim=2)
       v = v.repeat_interleave(self.num_attention_heads // self.num_kv_heads, dim=2)
     
-    # Transpose for attention computation
     q = q.transpose(1, 2)  # [batch, heads, seq_len, head_dim]
     k = k.transpose(1, 2)
     v = v.transpose(1, 2)
 
-    # Compute attention scores - FIXED: Corrected dimensions
     attention_weights = torch.matmul(q, k.transpose(-2, -1)) * self.scale
 
     # Apply attention mask
     if attention_mask is not None:
-      # Ensure attention mask has correct shape for broadcasting
       if attention_mask.dim() == 2:
         attention_mask = attention_mask.unsqueeze(1).unsqueeze(2)
       elif attention_mask.dim() == 3:
@@ -85,14 +78,11 @@ class GQA(nn.Module):
     attention_weights = torch.softmax(attention_weights, dim=-1)
     attention_output = torch.matmul(attention_weights, v)
 
-    # Transpose back and reshape
     attention_output = attention_output.transpose(1, 2).contiguous()
     attention_output = attention_output.view(batch_size, seq_len, self.hidden_size)
 
-    # Final projection
     attention_output = self.o_proj(attention_output)
 
-    # Return outputs - FIXED: Proper tuple construction
     if output_attentions:
       return attention_output, attention_weights, present_key_value
     else:
