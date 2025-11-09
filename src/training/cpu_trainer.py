@@ -12,8 +12,8 @@ class CPUTrainer:
       self,
       model: nn.Module,
       train_data_loader: DataLoader,
+      training_args: Dict[str, Any],
       tokenizer: Any = None,
-      training_args: Dict[str, Any] = None,
   ):
     self.model = model
     self.train_data_loader = train_data_loader
